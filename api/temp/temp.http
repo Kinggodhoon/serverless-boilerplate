@@ -1,0 +1,2 @@
+GET http://localhost:3000/dev/v1/temp?nonce=hi
+Content-type: application/json
