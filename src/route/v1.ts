@@ -1,17 +1,20 @@
 import { Router } from 'express';
 
+import Controller from '../application/controller';
+
 import HealthController from '../application/health/health.controller';
 import TempController from '../application/temp/temp.controller';
 
-const v1Router = Router();
+const router = Router();
 
-const routes: Array<Router> = [
-  new HealthController().getRouter(),
-  new TempController().getRouter(),
-];
+const controllers: Array<Controller> = [
+  new HealthController(),
+  new TempController(),
+]
 
-for (const route of routes) {
-  v1Router.use('/', route);
-}
+controllers.map((controller: Controller) => router.use('/', controller.getRouter()));
 
-export = routes;
+export default {
+  router,
+  controllers,
+};

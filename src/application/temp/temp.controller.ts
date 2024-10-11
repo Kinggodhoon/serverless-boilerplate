@@ -9,7 +9,10 @@ import authorizeValidate from '../../middleware/authorize.validate';
 import { TempRequest } from './model/temp.model';
 import TempService from './temp.service';
 import { HttpRequest, RequestWithUser } from '../../types/request';
+import { ApiEndpoint } from '../../decorator/swagger/api-endpoint';
+import { ApiContoller } from '../../decorator/swagger/api-controller';
 
+@ApiContoller('temp')
 class TempController extends Controller {
   public readonly path = '/temp';
 
@@ -27,29 +30,37 @@ class TempController extends Controller {
     this.router.get(`${this.path}/auth`, authorizeValidate, parameterValidate(TempRequest), this.withAuthTemp, response, releaseDatabase);
 
     // without auth
-    this.router.get(`${this.path}`, parameterValidate(TempRequest), this.withAuthTemp, response);
+    this.router.get(`${this.path}`, parameterValidate(TempRequest), this.temp, response);
   }
 
-  private withAuthTemp = async (req: RequestWithUser<TempRequest>, res: express.Response, next: express.NextFunction) => {
-    try {
-      const params = req.requestParams;
+  @ApiEndpoint('/temp/auth', 'get', {
+    request: TempRequest,
+    response: TempRequest,
+  })
+  private withAuthTemp = async (
+      req: RequestWithUser<TempRequest>,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      try {
+        const params = req.requestParams;
 
-      const ticket = await this.tempService.getTempTicket();
+        const ticket = await this.tempService.getTempTicket();
 
-      res.responseData = {
-        code: 200,
-        message: 'Success',
-        data: {
-          nonce: params.nonce,
-          ticket,
-        },
+        res.responseData = {
+          code: 200,
+          message: 'Success',
+          data: {
+            nonce: params.nonce,
+            ticket,
+          },
+        }
+      } catch (error) {
+        console.log(error);
+        res.responseError = error;
       }
-    } catch (error) {
-      console.log(error);
-      res.responseError = error;
+      return next();
     }
-    return next();
-  }
 
   private temp = async (req: HttpRequest<TempRequest>, res: express.Response, next: express.NextFunction) => {
     try {
