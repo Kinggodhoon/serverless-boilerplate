@@ -1,14 +1,14 @@
-import 'reflect-metadata';
 import { OpenAPITypes } from '../../swagger/model/types';
 
-// mapping metadata in api properties
-export function ApiProperty(attributes: {
+export interface ApiResponsePropertyAttributes {
   type: OpenAPITypes,
   isRequired: boolean,
   description?: string,
-  isArray?: boolean,
-  enum?: any[] | Record<string, any> | (() => (any[] | Record<string, any>)),
-  }) {
+  example?: any,
+}
+
+// Mapping response properties
+export function ResponseProperty(attributes: ApiResponsePropertyAttributes) {
   return function initApiProperty(target: { [key: string]: any }, propertyKey: string) {
     Object.assign(target, { [propertyKey]: attributes });
   };

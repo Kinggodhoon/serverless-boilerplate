@@ -20,6 +20,7 @@
     "import/prefer-default-export": 0,
     "max-classes-per-file": 0,
     "no-unused-expressions": 0,
+    "indent": ["error", 2, { "ignoredNodes": ["PropertyDefinition"] }],
     // In ES2015 (ES6) or later,
     // if you don't want to be notified about duplicate names in class members,
     // you can safely disable this rule.

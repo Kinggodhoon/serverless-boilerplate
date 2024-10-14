@@ -1,12 +1,12 @@
 import express from 'express';
 
 import Controller from '../controller';
-import { initDatabase, releaseDatabase } from '../../database/database';
+import { releaseDatabase } from '../../database/database';
 import response from '../../middleware/response';
 import parameterValidate from '../../middleware/parameter.validate';
 import authorizeValidate from '../../middleware/authorize.validate';
 
-import { TempRequest } from './model/temp.model';
+import { TempRequest, TempRequestModel, TempResponseModel } from './model/temp.model';
 import TempService from './temp.service';
 import { HttpRequest, RequestWithUser } from '../../types/request';
 import { ApiEndpoint } from '../../decorator/swagger/api-endpoint';
@@ -30,39 +30,55 @@ class TempController extends Controller {
     this.router.get(`${this.path}/auth`, authorizeValidate, parameterValidate(TempRequest), this.withAuthTemp, response, releaseDatabase);
 
     // without auth
-    this.router.get(`${this.path}`, parameterValidate(TempRequest), this.temp, response);
+    this.router.post(`${this.path}/temp/{testNum}`, parameterValidate(TempRequest), this.temp, response);
   }
 
-  @ApiEndpoint('/temp/auth', 'get', {
-    request: TempRequest,
-    response: TempRequest,
+  @ApiEndpoint({
+    path: 'auth',
+    method: 'get',
+    schema: {
+      request: TempRequest,
+      response: TempResponseModel,
+    },
   })
   private withAuthTemp = async (
-      req: RequestWithUser<TempRequest>,
-      res: express.Response,
-      next: express.NextFunction,
-    ) => {
-      try {
-        const params = req.requestParams;
+    req: RequestWithUser<TempRequest>,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    try {
+      const params = req.requestParams;
 
-        const ticket = await this.tempService.getTempTicket();
+      const ticket = await this.tempService.getTempTicket();
 
-        res.responseData = {
-          code: 200,
-          message: 'Success',
-          data: {
-            nonce: params.nonce,
-            ticket,
-          },
-        }
-      } catch (error) {
-        console.log(error);
-        res.responseError = error;
+      res.responseData = {
+        code: 200,
+        message: 'Success',
+        data: {
+          nonce: params.nonce,
+          ticket,
+        },
       }
-      return next();
+    } catch (error) {
+      console.log(error);
+      res.responseError = error;
     }
+    return next();
+  }
 
-  private temp = async (req: HttpRequest<TempRequest>, res: express.Response, next: express.NextFunction) => {
+  @ApiEndpoint({
+    path: 'temp/{testNum}',
+    method: 'post',
+    schema: {
+      request: TempRequestModel,
+      response: TempResponseModel,
+    },
+  })
+  private temp = async (
+    req: HttpRequest<TempRequestModel>,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
     try {
       const params = req.requestParams;
 
