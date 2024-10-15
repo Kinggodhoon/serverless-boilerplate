@@ -1,5 +1,6 @@
 /* eslint-disable array-callback-return */
 import 'reflect-metadata';
+import fs from 'fs';
 import _ from 'lodash';
 import swaggerJsdoc from 'swagger-jsdoc';
 
@@ -178,12 +179,16 @@ const mappingParameters = (apiResources: { [key: string]: any }) => {
   return apiResources;
 }
 
-export const generateSwaggerDocument = async () => {
+const generateSwaggerDocument = () => {
   const swaggerDoc = initOpenAPIDocs();
   const endpoints = initApiEndpoints();
   const apiResources = mappingParameters(endpoints);
 
   Object.assign(swaggerDoc, { paths: apiResources });
 
+  fs.writeFileSync(`${__dirname}/../../docs/swagger-spec.json`, JSON.stringify(swaggerDoc));
+
   return swaggerDoc;
 }
+
+generateSwaggerDocument();

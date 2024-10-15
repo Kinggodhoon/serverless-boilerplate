@@ -7,7 +7,8 @@
     "node": "^20.17.0"
   },
   "scripts": {
-    "start:dev": "sls offline start --stage dev --region ap-northeast-2 --port 3000"
+    "start:dev": "sls offline start --stage dev --region ap-northeast-2 --port 3000",
+    "init:swagger": "ts-node ./src/swagger/setup-swagger.ts"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +25,6 @@
     "serverless": "^2.64.1",
     "serverless-http": "^2.3.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -36,7 +36,6 @@
     "@types/pg": "^8.10.2",
     "@types/reflect-metadata": "^0.1.0",
     "@types/swagger-jsdoc": "^6.0.4",
-    "@types/swagger-ui-express": "^4.1.6",
     "@types/uuid": "^9.0.2",
     "@typescript-eslint/eslint-plugin": "^5.18.0",
     "@typescript-eslint/parser": "^5.18.0",
